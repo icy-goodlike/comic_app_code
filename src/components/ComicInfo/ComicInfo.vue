@@ -5,21 +5,15 @@
       <template #title>
         <div class="title-box">
           <!-- 标题 -->
-          <span>{{title}}</span>
+          <span class="title-text">{{title}}</span>
+          <span class="title-bt">查看全部</span>
         </div>
-        <!-- 三张图片 -->
+        <!-- 6张图片 -->
         <div class="thumb-box">
-          <img :src="path" alt="犬夜叉" class="thumb">
-          <img :src="path" alt="犬夜叉" class="thumb">
-          <img :src="path" alt="犬夜叉" class="thumb">
-        </div>
-      </template>
-      <!-- label 区域的插槽 -->
-      <template #label>
-        <div class="label-box">
-          <span>{{tag}} &nbsp;&nbsp; 评价 &nbsp;&nbsp;{{score}} &nbsp;&nbsp; 发布日期 : {{date}}</span>
-          <!-- 关闭按钮 -->
-          <van-icon name="cross" />
+          <div v-for="i in 6" :key="i" class="thumb-box-div">
+            <img :src="path" alt="犬夜叉" class="thumb">
+            <span>{{title}}</span>
+          </div>
         </div>
       </template>
     </van-cell>
@@ -56,11 +50,6 @@ export default {
 </script>
 
 <style lang='less' scoped>
-.label-box {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 .thumb {
   // 矩形黄金比例：0.618
   width: 113px;
@@ -76,7 +65,29 @@ export default {
 }
 
 .thumb-box {
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
+  height: 360px;
+  .thumb-box-div {
+    display: inline-block;
+    width: 30%;
+    height: 48%;
+    margin: 1%;
+    text-align: center;
+    img {
+      width: 80%;
+      height: 80%;
+    }
+    span {
+      display: block;
+    }
+  }
+}
+.title-text {
+  font-weight: 600;
+  font-size: 17px;
+  font-family: '微软雅黑';
+}
+.title-bt {
+  color: #aaa;
 }
 </style>

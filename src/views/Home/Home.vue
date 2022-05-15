@@ -1,38 +1,27 @@
 <template>
   <div class="home-container">
-    <!-- navbar -->
-    <van-nav-bar class='top'
-    fixed
-    title="动漫精选"/>
-
-    <!-- 轮播图组件 -->
-    <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white" :width="360" :height="200">
-      <van-swipe-item v-for="(image, index) in images" :key="index">
-        <img v-lazy="image" />
-      </van-swipe-item>
-    </van-swipe>
-
-    <!-- 上拉加载 -->
-    <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
-      <van-list
-        v-model="loading"
-        :finished="finished"
-        finished-text="没有更多了"
-        @load="onLoad">
-          <!-- comic组件-->
-          <ComicInfo v-for="item in comicList" :key="item.id"
-          :title="item.comic_name"
-          :score="item.comic_score"
-          :tag="item.comic_tag"
-          :path="item.comic_path"
-          />
-      </van-list>
-    </van-pull-refresh>
+    <!-- 搜索框 -->
+    <van-search v-model="value" placeholder="请输入搜索关键词" />
+    <!-- tab分页栏 -->
+    <van-tabs v-model="active" swipeable>
+      <van-tab title="推荐">
+        <!-- 轮播图组件 -->
+        <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white" :width="380" :height="200">
+          <van-swipe-item v-for="(image, index) in images" :key="index">
+            <img v-lazy="image" />
+          </van-swipe-item>
+        </van-swipe>
+        <!-- 内容区域 -->
+        <!-- comic组件-->
+        <ComicInfo v-for="(item,index) in title" :key="index" :title="item"  :path="item.comic_path" />
+      </van-tab>
+      <van-tab title="日漫">内容 2</van-tab>
+      <van-tab title="国漫">内容 3</van-tab>
+    </van-tabs>
   </div>
 </template>
 
 <script>
-
 import { getComicListAPI } from '@/api/comicAPI.js'
 
 import ComicInfo from '@/components/ComicInfo/ComicInfo.vue'
@@ -42,19 +31,21 @@ export default {
   name: 'Home',
   data() {
     return {
-      page: 1, // 页码值
-      limit: 1, // 每页显示数据
+      // 页码值
+      page: 1,
+      // 每页显示数据
+      limit: 1,
       comicList: [],
-      images: ['https://img1.baidu.com/it/u=3916934225,590015279&fm=253&fmt=auto&app=138&f=JPEG?w=501&h=500',
-        'https://img0.baidu.com/it/u=198555477,943855279&fm=253&fmt=auto&app=138&f=JPEG?w=667&h=500',
-        'https://img0.baidu.com/it/u=198555477,943855279&fm=253&fmt=auto&app=138&f=JPEG?w=667&h=500'
-      ], // 轮播图
-      // loading为false则可以触发上拉加载事件，为true则无法触发，所以在触发loading事件时务必设置为true防止事件反复触发
-      // 当数据请求回来后则记得把true改为false，防止下次触发load事件无效
-      loading: true,
-      // 当没有数据时，把finish设置为true
-      finished: false,
-      refreshing: false,
+      // 轮播图
+      images: [this.$store.state.baseImg + 'banner1.png',
+        this.$store.state.baseImg + 'banner2.png',
+        this.$store.state.baseImg + 'banner3.png'],
+      // 搜索框的值
+      value: '',
+      // 激活的tap栏
+      active: 0,
+      // 板块标题
+      title: ['精选新番', '精选国漫', '精选日漫'],
       num: [1, 1, 1, 1, 1, 1, 1, 1] // 测试数据
     }
   },
@@ -64,20 +55,6 @@ export default {
       const { data: res } = await getComicListAPI(this.page, this.limit)
       console.log(res.data)
       this.comicList = res.data
-      // 当第一页数据请求回来后，把上拉加载的loading打开
-      this.loading = false
-    },
-    onLoad() {
-      console.log('触发了load事件')
-    },
-    onRefresh() {
-      // 清空列表数据
-      this.finished = false
-
-      // 重新加载数据
-      // 将 loading 设置为 true，表示处于加载状态
-      this.loading = true
-      this.onLoad()
     }
   },
   components: {
@@ -90,28 +67,31 @@ export default {
 </script>
 
 <style lang='less' scoped>
-  .home-container {
-    padding: 46px 0 50px 0;
-      .van-nav-bar {
-        background-color: #007bff;
-      }
-      .van-nav-bar__title{
-        color:white;
-      }
-      .my-swipe .van-swipe-item {
-        color: #fff;
-        font-size: 20px;
-        line-height: 150px;
-        text-align: center;
-      }
-      .van-swipe-item{
-         border-radius: 15px;
-        img{
-          border-radius: 15px;
-          width:95%;
-          height:100%;
-        }
-      }
+.home-container {
+  padding: 5px 0 50px 0;
+  .van-nav-bar {
+    background-color: #007bff;
   }
-
+  .van-nav-bar__title {
+    color: white;
+  }
+  .van-swipe {
+    margin: 5px;
+  }
+  .my-swipe .van-swipe-item {
+    color: #fff;
+    font-size: 20px;
+    line-height: 150px;
+    text-align: center;
+  }
+  .van-swipe-item {
+    border-radius: 15px;
+    text-align: center;
+    img {
+      border-radius: 15px;
+      width: 95%;
+      height: 100%;
+    }
+  }
+}
 </style>
